@@ -1,0 +1,310 @@
+Step by step:
+------------
+
+1) Create required packages and classes.
+2) use one seperate class from identify locators and check whether its working or not.
+3) Once everything works, place the locators in required class. and create the actions(method).
+4) if we well knowm, that method navigate to new page. then create the object for that class, and return the obj variable.
+5) Build our testcases in ActualTestProject.
+6) Create Properties class, and make sure that class ends with .properties.
+7) And create AbstractClass and Baseclasses and extends the class properly to access their methods.
+8) Base class holds the browserlaunch and close browsers. from properties, we can access the values from base class.
+9) Abstract class holds resuable blocks.
+10) Once base class is ready, now we have to modify our actual project class.
+11) Make sure, we initialize and give the life to the driver.
+12) remove the main method and use, @tesyt annoation instead.
+13) use @afterMethod and @BeforeMethod annoatation, for launch and close the browser. @Test keeps the actual TestMethod
+14) Each @test method represent one Testcases, so we can have multiple Testcases in one folder. 
+Example --> Java Class -> LoginPage @Test, @Test, @Test, @Test, @Test -> These 5 testcases related to loginPage error related testcases, so we can keep it in one java class.
+Same way, we can have different module classes, and contains those related testcases in it.
+
+Or else, we can go with SprintWise also, we add the testcases based on the sprints.
+15) Dont add multiple scenario's in single Testcases. Try to use different testcases, for different test scenario. if one testcase got failed, we can jump into another testcase.
+16) by simply use @dependecy. which will helps to run the next testcase, once the previous testcases got completed.
+17) Once Testcases are ready, CreateTestNg XML -> by simply rightclick the project -> convert to Testng.xml
+18)  In POM.XML, if we set the thread-counts, based on the counts, the execution will happen parellely. constraint below 5.
+19)  Create TestSuite folder, and maintain our pom.xml in it.
+20) when we go for grouping, we make sure, post and preconditions methods are set it as "Runalways". So that, we run for grouping, pre & conditions will run everytime, before execute the methods.
+if we set smoke or regression for pre and post methods, then those not triggered, when we run for sanity. So make sure giving generic Names.
+
+21) DataProvider, will help us to pass the different set of data for same method. this way, we can execute same testcases with different set of data.
+22) But when it comes to huge number of data set, that will mess our code. To over come this, we go for HashMap concept. Example present in SubmitOrder
+23) In Some Project, they use JSON, to get the data. Create new package, and add file with .json extension. Thats one time creation
+24) Create Screenshot utility in BaseTest, which takes the screnshot when testcase failed. By using Listeners interface, Its possible.
+25) ExtendsReports, we need to download and add the dependency in POM.xml
+26) Create the ExtendReport method in baseclass. and create one Listeners class to monitor the testExecution 
+27) One Listerner class is ready, we have to tell the pom.xml. about the Listener class. COnfiguration should be done in POM.XML. 
+28) Flush method should be hanlded, thats is mandatory, if not, then we wont get xml report. ALL This SetUp's are one time process.
+29) Failure gives the new testresult, with the name of method. Run in sequence.. if parellel. we will get different method names  for different errors.
+30) To handle that issue, we have to use ThreadSafe in Listeners class. 
+31) Set up, IretryListeners. It helps to rerun the failed testcases. Once Retry Interface class is ready. we have to specify the pass the class name as a parameter on the testmethods, wherever we feel that testcase may fail, due to flaky.
+32) if testcase failed, and retryanalyzere runs our testcase based on how many counts we defined. only last try considered as failure. how many try the method execute, that consider as skipped.
+
+
+---------Frame work done------------
+
+
+2. HOW TO RUN OUR TESTS THROUGH TERMINAL
+-------------------------------------
+
+1) Once our project is integrated with CI/CD. Then we should run our Test from Terminal only. We need to install maven for accessing that from terminal.
+Google -> maven download -> download -> apache-maven-3.9.9.zip -> configuration check this website -> https://www.qamadness.com/knowledge-base/how-to-install-maven-and-configure-environment-variables/
+Set up environment variables as shown in the website.
+
+2) and download the plugin to "maven testng integration" -> maven surefirePlugin 
+download it from "https://maven.apache.org/surefire/maven-surefire-plugin/examples/testng.html"
+copy from second <plugin> to </plugin> not fully. Paste that in POM.XML. inside Plugins tag. 
+
+And we need to create unique profiles, if we have multiple testrunner files.  => if we have multiple testsuites.
+See the POM.XML. 
+
+Example: 
+
+<profiles>
+	  <profile>
+		  <id>Listeners</id>		
+		  <build>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>		  
+		  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <suiteXmlFiles>
+            <suiteXmlFile>testSuites/Listeners.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+        </plugins>		
+          </pluginManagement>
+          </build>
+	  </profile>
+	  
+	  <profile>
+		  <id>ExecuteTestCasesParellelly</id>
+		  <build>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+		  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <suiteXmlFiles>
+            <suiteXmlFile>testSuites/ExecuteTestCasesParellelly.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+        </plugins>		
+          </pluginManagement>
+          </build>		  		  
+	  </profile>
+	  
+	  <profile>
+		  <id>ExecuteTestcasesGrouping</id>		
+		  <build>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>		  
+		  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <suiteXmlFiles>
+            <suiteXmlFile>testSuites/ExecuteTestcasesGrouping.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+        </plugins>		
+          </pluginManagement>
+          </build>  		  
+	  </profile>	
+	  
+	  <profile>
+		  <id>ExecuteTestCaseMethodsParellelly2</id>
+		  <build>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+		   <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <suiteXmlFiles>
+            <suiteXmlFile>testSuites/ExecuteTestCaseMethodsParellelly2.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+        </plugins>		
+          </pluginManagement>
+          </build>		  		  
+	  </profile>	
+	  
+	  <profile>
+		  <id>ExecuteTestcasesClassWise</id>
+		  <build>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+		  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <suiteXmlFiles>
+            <suiteXmlFile>testSuites/ExecuteTestcasesClassWise.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+        </plugins>		
+          </pluginManagement>
+          </build>		  		  
+	  </profile>	    
+  </profiles>
+  
+
+check the below in the POM.XML:
+--------------------------------
+if we use java stream in our project
+  <maven.compiler.release>17</maven.compiler.release>   => Change this as, if any mismatch  => <maven.compiler.source>1.8</maven.compiler.source>
+    																		                   <maven.compiler.target>1.8</maven.compiler.target>
+    																		                   
+    																		                   
+1-> Go to project and open the terminal from there, or navigate to project folder through terminal
+2-> mvn test -PListerners => we have to mention the profilename, that we created, next to P, without space. Then that particular test will trigger.
+if we give mvn test, this will execute all the testcases. 
+
+3) To Send parameters through Terminal 														                   
+--------------------------------------
+mvn test -Dbrowser = Firefox => we should this browser parameter in our project, then only it works.
+ D=> stand for maven parameter.
+ 
+ 
+ 
+ 
+ 3. JENKINS INSTALLATION IN LOCAL
+ --------------------------------
+ 
+ 1. Search jenkins download in google -> hit download jenkins. 
+ "https://www.jenkins.io/"
+ 
+ download Generic Java Packages(.war) 
+ 
+ download from "https://www.jenkins.io/download/"
+ 
+ 2. Open the cmd prompt from where the jenkins.war file exists. or open cmd, and locate the access of jenkins.war file exists 
+ 
+ java -jar jenkins.war -httpPort=9090 
+hit enter, we can use either of the port numbers {9090, 8080}
+
+This will invoke the jar . and hit the localhost:9090 in your browser. this will open the progress  => set user name and password.
+
+
+Click New Item -> to set new jenkins set up for project. --> Name the Project -> select FreeStyle Project -> Hit Okay.
+
+if our code is present in gitHub, we simply select "Git" and give the url of the repository. (This will be chosen in real project)
+
+To take the code from local -> hit "Advance" , use custom workspace -> provide our project presenting in local machine "C:\Users\DeepakVaithylingam\eclipse-workspace\SwagLab"
+
+
+Build option: 
+
+Select invoke top-level maven targets from drop down
+
+provide the maven cmd -> mvn not required here --> so use, test -PRegression -Dbrowser=firefox  {here regression is profile, browser we set it from cmds}
+
+Save it.
+
+RUN THE PROJECT
+----------------
+
+Hit -> Build Now -> execution will be started. 
+To see the logs -> hit the time stamp over the running the status -> Console output -> will show the logs..
+
+To Make browser set up in Generic
+================================
+Go to configure -> to check "This project is paramaterized" -> Add Parameter -> select choice parameter -> 
+Provide name as browserName , in choices chrome firefox edge => no comma seperators and comma's.. place one by one 
+After we set the parameter, BUILD NOW option turned into BUILD WITH PARAMETERS 
+
+hit the option, and go to build section
+
+test -PRegression -Dbrowser="$browserName"  => Save the process
+
+if we set this way, we can dynamcically passing the value
+
+We can select the choices and hit build, will pass the value to the mvn command, and script will execute with the selected browser
+
+The Same way, we can set our profileNames also dynamic, as we did for browser. 
+
+TestCaseName in name field
+
+Regression
+Smoke
+Sanity are in choices
+
+
+Example : test -P"$TestCaseName" -Dbrowser="$browserName"
+
+
+4. RUN OUR TESTCASE IN HEADLESS MODE
+--------------------------------------
+This will speed up the execution, comparing with header executions. 
+Browser actions will not displayed in UI, all will be handled by driver engines.
+
+Add the parameters in Build section in jenkins. ex: chromeheadless
+
+
+5. Schedule jenkins job with regular expression and trigger nightly automation jobs
+--------------------------------------------------------------------------------------
+
+go to configure in jenkins -> Build Triggers -> select build periodically -> we have to set the time in the schedule
+
+we have pattern for that:
+-------------------------
+
+***** -> this is the format we have to follow.
+1st argument stands for--> minute (0 - 59)
+2nd argument stands for --> hour (0 - 23)
+3rd argument stands for --> day of the month (1-31)
+4th argument stands for --> Month in the year (1-12)
+5th argument stands for --> Day of the Week (0-7) where 0 and 7 are represent sunday
+
+if we leave, any start as it is, then it would consider. once all set, hit "save".
+
+better to always minute, to skip unwanted issues. ex: 5 6 * * * -> means, build will run 6:05am every day. or use H for the first star. ex: H 6 * * *
+
+Make sure, server is on, on the specified timeline. 
+
+
+6. SELENIUM FRAMEWORK INTERVIEW QUESTIONS
+-----------------------------------------
+
+1) What is the design the pattern you have used in writing the tests in the framework?
+2) How are resuable utilities handled with the framework ?
+Ans:==>	in this project, i have separated reusable methods in two different class, selenium related methods exists in abstract class and tests related methods exists in base class.
+3) where did you use inheritance oops concept in your framework?
+4) how did you drive the data from external files in framwework ?
+5) did you use interfaces in the framework? if so, what is the scope of it? ans: webdriver, ItestListeners and IretryAnalyser
+6) how are you achieving encapsulation in the framework?  =>if we set the locators as private and the actions methods are public, so that we cant use the locator fields, in other classes.  
+7) does your framework support parellel runs? how are you writing Thread safe code? ans: Threadlocal class, we use in extend report, to create unique thread ID.
+8) do you have static keywords in the framework ? if so its usage? ans: static will share the variable, so dont use static when we go for parallel. 
+9) how are you sending globle properties to your test at run time? ans: we can set browser, url, and waits.
+10)whats is the mechanism you use to run only selected set of tests inside the framework?
+11) how are you handled flaky tests in your framework?
+12) Does your framework take screenshot, when testcase failure? how its implemented?
+13) Explain framework architecture?
+
+ 
+
+
+
+ 
+
+
+ 
+
+
+ 
+
+
